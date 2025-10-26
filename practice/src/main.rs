@@ -1,23 +1,14 @@
-use std::thread;
+use std::time::Instant;
+use reqwest::Error;
 
-fn main() {
-    let mut threads = Vec::new();
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    let url = "https://jsonplaceholder.typicode.com/posts/1";
+    let start_time = Instant::now();
 
-    for i in 0..8 {
-        let handle = thread::spawn(move || {
-            let result = fibonaci(4000);
-            println!("Thread {} result: {}", i, result);
-        });
-        threads.push(handle);
-    }
-    for handle in threads {
-        handle.join().unwrap();
-    }
-}
+    let _ = reqwest::get(url).await?;
 
-fn fibonaci(n: u64) -> u64 {
-    if n == 0 || n == 1 {
-        return n;
-    }
-    fibonaci(n - 1) + fibonaci(n - 2)
+    let elapsed_time = start_time.elapsed();
+    println!("Request took: {} ms", elapsed_time.as_millis());
+    Ok(())
 }
